@@ -1,2 +1,0 @@
-# surveyTools
-tools for surveying
