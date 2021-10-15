@@ -90,12 +90,57 @@ def MGA2Grid(mga_cp_points,proj_cp_points,mga_points_2_trans):
     
     return [grid_points_trans,trans_mat]
 
+'''
+Project2Grid
+------------
+project MGA coordinates to a Project grid defined by translation and rotation relative to MGA
+
+input:
+1. rot_angle_deg - rotation angle from North axis clockwise (azimuth) of grid system relative to MGA.
+2. MGA_base_point - The origin of the grid system in MGA coordinates ,1*2 matrix [e,n]  
+3. mga_points_2_trans - mga coordinates to transform matrix m*2 [e,n;...]
+
+output:
+1.grid_points_trans - transformed mga coordinates matrix m*2 [e,n;...]
+
+'''
+def Project2Grid(rot_angle_deg,MGA_base_point,mga_points_2_trans):
+    #setting homogenious coordinates
+    num_of_points_to_trans=mga_points_2_trans.shape[0]
+    one_vec=np.ones((num_of_points_to_trans,1))
+    mga_points_2_trans=np.concatenate((mga_points_2_trans,one_vec),axis=1).transpose()
+    ###building projection matrix###
+    rot_mat=np.identity(3)
+    trans_mat=np.identity(3)
+    #2D rotation
+    rot_angle_rad=rot_angle_deg*deg2rad
+    cosa=mt.cos(rot_angle_rad)
+    sina=mt.sin(rot_angle_rad)
+    rot_mat[0,0]=cosa
+    rot_mat[0,1]=-sina
+    rot_mat[1,0]=sina
+    rot_mat[1,1]=cosa
+    #2D translation
+    trans_mat[0,2]=-MGA_base_point[0]
+    trans_mat[1,2]=-MGA_base_point[1]
+    ###project###
+    proj_mat=np.matmul(rot_mat,trans_mat)
+    grid_points_trans=np.matmul(proj_mat,mga_points_2_trans)
+    grid_points_trans=grid_points_trans.transpose()
+    grid_points_trans=grid_points_trans[:,0:2]
+
+    return grid_points_trans
+
+
+
+'''================================================================================================================'''
 
 
 '''testing functionality'''
-
 if __name__ == "__main__":
     deg2rad=mt.pi/180
+
+    ###test MGA2Grid###
 
     #read input
     grid_points_file=r'./Data/XYZ 211012 L1 SCAN TARGETS RK PG.txt'
@@ -116,10 +161,18 @@ if __name__ == "__main__":
 
     #calc transformation
     [grid_points_trans,trans_mat]=MGA2Grid(mga_cp_points[ind_cp,:],proj_cp_points[ind_cp,:],mga_cp_points[ind_ck,:])
-    print(grid_points_trans-proj_cp_points[ind_ck,:])
-    rot_ang_deg=mt.acos(trans_mat[0,0])/deg2rad
-    print(rot_ang_deg)
+    #print(grid_points_trans-proj_cp_points[ind_ck,:])
+    rot_ang_deg=mt.atan(trans_mat[1,0]/trans_mat[0,0])/deg2rad
+    print("rotation angle: " + str(rot_ang_deg))
 
     #transformation params (as in file)
-    center_point=np.linalg.inv(trans_mat)*np.matrix([[0,0,1]]).transpose()
-    print(center_point[0:2,:].transpose())
+    #center_point=np.linalg.inv(trans_mat)*np.matrix([[0,0,1]]).transpose()
+    scale=trans_mat[0,0]*trans_mat[0,0]+trans_mat[1,0]*trans_mat[1,0]
+    rot_mat=trans_mat[0:2,0:2]/scale
+
+    center_point=np.matmul(-rot_mat.transpose(),trans_mat[0:2,2])
+    print("center point: " + str(center_point[0:2,:].transpose()))
+
+    ###test Project2Grid###
+    grid_points_trans2=Project2Grid(rot_ang_deg,center_point,mga_cp_points[ind_ck,:])
+    print(grid_points_trans2-grid_points_trans)
