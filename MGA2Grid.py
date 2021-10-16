@@ -297,7 +297,13 @@ if __name__ == "__main__":
 
     ###test Project2Grid###
     grid_points_trans_lin=Project2Grid(lin_trans_mat,mga_cp_points[ind_ck,:])
-    print("residuals_lin: " + "\n" + str(grid_points_trans_lin-proj_cp_points[ind_ck,:]))
+    resid_lin=grid_points_trans_lin-proj_cp_points[ind_ck,:]
+    print("residuals_lin: " + "\n" + str(resid_lin))
+    V=np.reshape(resid_lin,(2*ind_ck.shape[0],1))
+    g0_g_lin=mt.sqrt(np.matmul(V.transpose(),V)[0] / (ind_cp.shape[0]-4) ) 
 
     grid_points_trans_nonlin=Project2Grid(proj_mat_mga2grid,mga_cp_points[ind_ck,:])
-    print("residuals_nonlin: " + "\n" + str(grid_points_trans_nonlin-proj_cp_points[ind_ck,:]))
+    resid_nonlin=grid_points_trans_nonlin-proj_cp_points[ind_ck,:]
+    print("residuals_nonlin: " + "\n" + str(resid_nonlin))
+    V2=np.reshape(resid_nonlin,(2*ind_ck.shape[0],1))
+    g0_g_nonlin=mt.sqrt(np.matmul(V2.transpose(),V2)[0] / (ind_cp.shape[0]-3) )
