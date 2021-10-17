@@ -1,8 +1,5 @@
-import textwrap
 import numpy as np
 import math as mt
-
-from numpy.lib.shape_base import column_stack
 
 
 def normalize_coors(cp_points, use_scale=True):
