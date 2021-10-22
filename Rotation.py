@@ -2,7 +2,7 @@ from numpy import matrix as mat
 from numpy import multiply
 from math import cos,sin,pi
 
-def RotMat2D(ang_rad,direction='clockwise'):
+def RotMat2D(ang_rad,direction='counter_clockwise'):
     '''
     RotMat2D
     --------
@@ -26,8 +26,12 @@ def RotMat2D(ang_rad,direction='clockwise'):
         raise ValueError("direction argument can only get values of clockwise/counter_clockwise")
     
     rot_mat=multiply( mat([ [cosa,sina] , [sina,cosa] ]) , direct_mat)
-
     return rot_mat
+
+
+def RotMat3D(ang_rad,axis='Z',direction='counter_clockwise'):
+    return
+
 
 
 '''testing functionality'''
