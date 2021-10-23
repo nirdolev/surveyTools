@@ -1,6 +1,24 @@
 from numpy import matrix as mat
 from numpy import multiply
-from math import cos,sin,pi
+from math import asin, cos,sin,pi
+
+def sincos(ang_rad):
+    '''
+    sincos
+    ------
+    calculates sin and cos values of an angle [rad]
+
+    input:
+    1. ang_rad - rotation angle  [radians]
+
+    output:
+    1. asin - sin(angle)
+    2. acos - cos(angle)
+    '''
+    asin=sin(ang_rad)
+    acos=cos(ang_rad)
+    return [asin,acos]
+
 
 def RotMat2D(ang_rad,direction='counter_clockwise'):
     '''
@@ -16,8 +34,7 @@ def RotMat2D(ang_rad,direction='counter_clockwise'):
     1. rot_mat - 2D rotation matrix. 2*2 matrix
     '''
 
-    cosa=cos(ang_rad)
-    sina=sin(ang_rad)
+    [asin,acos]=sincos(ang_rad)
     if direction=='clockwise':
         direct_mat=mat([ [1,-1] , [1,1] ])
     elif direction=='counter_clockwise':
@@ -29,8 +46,105 @@ def RotMat2D(ang_rad,direction='counter_clockwise'):
     return rot_mat
 
 
+def RotMat3X(ang_rad,direction='counter_clockwise'):
+    '''
+    RotMat3X
+    --------
+    3D rotation matrix around X axis
+
+    input:
+    1. ang_rad - rotation angle  [radians]
+    2. direction - direction of rotation of the coordinate system (clockwise/counter_clockwise). if you want it to rotate a point it is contrary.
+
+    output:
+    1. rot_mat - 3D rotation matrix around X axis. 3*3 matrix
+    '''
+
+    [asin,acos]=sincos(ang_rad)
+    if direction=='counter_clockwise':
+        rot_mat=mat([ [1,0,0],[0,acos,asin],[0,-asin,acos] ])
+    elif direction=='clockwise':
+        rot_mat=mat([ [1,0,0],[0,acos,-asin],[0,asin,acos] ])
+    else:
+        raise ValueError("direction argument can only get values of clockwise/counter_clockwise")
+    return rot_mat
+
+
+def RotMat3Y(ang_rad,direction='counter_clockwise'):
+    '''
+    RotMat3Y
+    --------
+    3D rotation matrix around Y axis.
+
+    input:
+    1. ang_rad - rotation angle  [radians]
+    2. direction - direction of rotation of the coordinate system (clockwise/counter_clockwise). if you want it to rotate a point it is contrary.
+
+    output:
+    1. rot_mat - 3D rotation matrix around Y axis. 3*3 matrix
+    '''
+
+    [asin,acos]=sincos(ang_rad)
+    if direction=='counter_clockwise':
+        rot_mat=mat([ [acos,0,-asin],[0,1,0],[asin,0,acos] ])
+    elif direction=='clockwise':
+        rot_mat=mat([ [acos,0,asin],[0,1,0],[-asin,0,acos] ])
+    else:
+        raise ValueError("direction argument can only get values of clockwise/counter_clockwise")
+    return rot_mat
+
+
+def RotMat3Z(ang_rad,direction='counter_clockwise'):
+    '''
+    RotMat3Z
+    --------
+    3D rotation matrix around Z axis.
+
+    input:
+    1. ang_rad - rotation angle  [radians]
+    2. direction - direction of rotation of the coordinate system (clockwise/counter_clockwise). if you want it to rotate a point it is contrary.
+
+    output:
+    1. rot_mat - 3D rotation matrix around Z axis. 3*3 matrix
+    '''
+
+    [asin,acos]=sincos(ang_rad)
+    if direction=='counter_clockwise':
+        rot_mat=mat([ [acos,asin,0],[-asin,acos,0],[0,0,1] ])
+    elif direction=='clockwise':
+        rot_mat=mat([ [acos,-asin,0],[asin,acos,0],[0,0,1] ])
+    else:
+        raise ValueError("direction argument can only get values of clockwise/counter_clockwise")
+    return rot_mat
+
+
 def RotMat3D(ang_rad,axis='Z',direction='counter_clockwise'):
-    return
+    '''
+    RotMat3D
+    --------
+    3D rotation matrix
+    
+    input:
+    1. ang_rad - rotation angle  [radians]
+    2. axis - around which axis are we rotating. X/Y/Z
+    3. direction - direction of rotation of the coordinate system (clockwise/counter_clockwise). if you want it to rotate a point it is contrary.
+
+    output:
+    1. rot_mat - 3D rotation matrix. 3*3 matrix
+    '''
+    [asin,acos]=sincos(ang_rad)
+    
+    if axis=='X':
+        return RotMat3X(ang_rad,direction)
+    elif axis=='Y':
+        return RotMat3Y(ang_rad,direction)
+    elif axis=='Z':
+        return RotMat3Z(ang_rad,direction)
+    else:
+        raise ValueError("axis argument can only get values of X/Y/Z")
+
+    
+    
 
 
 
