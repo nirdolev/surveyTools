@@ -1,6 +1,6 @@
 from numpy import matrix as mat
 from numpy import multiply
-from math import asin, cos,sin,pi
+from math import cos,sin,pi
 
 def sincos(ang_rad):
     '''
